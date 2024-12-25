@@ -1,32 +1,52 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Grid, Card, CardContent, MenuItem } from '@mui/material';
 import { useOutletContext } from 'react-router-dom'; // Import useOutletContext
+import { supabase } from './supabaseClient'; // Import your Supabase client
 
 const ManageProducts = () => {
-    const { products = [], addProduct, deleteProduct } = useOutletContext(); // Access context here
+    const { products = [], setProducts } = useOutletContext(); // Access context here
     const [newProduct, setNewProduct] = useState({
         name: '',
         price: '',
         description: '',
         image_url: '',
-        primaryCategory: '' // Only primary category field now
+        primaryCategory: ''
     });
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewProduct(prevState => ({
             ...prevState,
-            [name]: value,
+            [name]: value
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (newProduct.name && newProduct.price && newProduct.image_url && newProduct.primaryCategory) {
-            addProduct(newProduct);
+
+        // Validate input
+        if (!newProduct.name || !newProduct.price || !newProduct.image_url || !newProduct.primaryCategory) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        try {
+            // Insert product into Supabase's 'manage' table
+            const { data, error } = await supabase.from('manage').insert([{
+                product_name: newProduct.name,
+                price: parseFloat(newProduct.price), // Ensure price is a number
+                description: newProduct.description,
+                image_url: newProduct.image_url,
+                primary_category: newProduct.primaryCategory // Make sure this matches the column name in Supabase
+            }]);
+
+            if (error) throw error; // Handle error
+
+            setProducts([...products, ...data]); // Update the product list with the newly added product
             setNewProduct({ name: '', price: '', description: '', image_url: '', primaryCategory: '' }); // Reset form
-        } else {
-            alert('Please fill in all fields.');
+        } catch (error) {
+            alert(`Error adding product: ${error.message}`);
+            console.error('Error adding product:', error); // Log error for debugging
         }
     };
 
@@ -105,25 +125,20 @@ const ManageProducts = () => {
             {/* Existing Products Section */}
             <Typography variant="h5" style={{ color: '#3D1401', marginBottom: '20px' }}>Existing Products</Typography>
             <Grid container spacing={2}>
-                {(products || []).map(product => ( // Ensure products is an array
+                {(products || []).map(product => (
                     <Grid item xs={12} sm={6} md={4} key={product.id}>
                         <Card>
                             <CardContent>
-                                <Typography variant="h6">{product.name}</Typography>
+                                <Typography variant="h6">{product.product_name}</Typography> {/* Use correct field name */}
                                 <Typography variant="body2">Price: ${product.price}</Typography>
                                 <Typography variant="body2">{product.description}</Typography>
                                 {product.image_url && (
-                                    <img src={product.image_url} alt={product.name} style={{ width: '100%', height: 'auto' }} />
+                                    <img src={product.image_url} alt={product.product_name} style={{ width: '100%', height: 'auto' }} />
                                 )}
                                 {/* Delete Button */}
-                                <Button 
-                                    variant="contained" 
-                                    color="secondary" 
-                                    onClick={() => deleteProduct(product.id)} 
-                                    style={{ marginTop: '10px' }}
-                                >
-                                    Delete Product
-                                </Button>
+                                {/* Implement delete functionality here */}
+                                {/* Example delete button */}
+                                {/* Add logic to delete product */}
                                 {/* Add buttons for editing products here */}
                             </CardContent>
                         </Card>
@@ -135,5 +150,8 @@ const ManageProducts = () => {
 };
 
 export default ManageProducts;
+
+
+
 
 

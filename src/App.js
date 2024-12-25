@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
@@ -7,17 +7,24 @@ import AdminDashboard from './pages/AdminDashboard';
 import UserView from './pages/UserView'; // Ensure this component exists
 import ManageProducts from './pages/ManageProducts'; // Import ManageProducts
 import Navbar from './Components/NavBar'; 
-import './index.css';
+import { supabase } from './pages/supabaseClient'; // Import your Supabase client
 
 const App = () => {
     const [cart, setCart] = useState([]);
+    const [sneakers, setSneakers] = useState([]);
 
-    // Sample sneaker data
-    const sneakers = [
-        { id: 1, name: 'Sneaker 1', price: 100, description: 'Description for Sneaker 1', image_url: 'url_to_image_1' },
-        { id: 2, name: 'Sneaker 2', price: 120, description: 'Description for Sneaker 2', image_url: 'url_to_image_2' },
-        // Add more sneakers as needed
-    ];
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        const { data, error } = await supabase.from('products').select('*'); // Fetch all products
+        if (error) {
+            console.error('Error fetching products:', error);
+        } else {
+            setSneakers(data); // Set the fetched products
+        }
+    };
 
     const addToCart = (sneaker) => {
         const existingItem = cart.find(item => item.id === sneaker.id);
@@ -59,3 +66,4 @@ const App = () => {
 };
 
 export default App;
+
