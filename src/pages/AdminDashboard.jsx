@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Drawer, List, ListItem, Button } from '@mui/material';
+import { Drawer, List, ListItem, Button, Collapse } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Import the ExpandMore icon
 import { Link, Outlet } from 'react-router-dom'; // Use Outlet for nested routing
 
 const AdminDashboard = () => {
     const [products, setProducts] = useState([]); // State to hold products
+    const [openDropdown, setOpenDropdown] = useState(false); // State to control dropdown visibility
 
     const addProduct = (newProduct) => {
-        // Generate a new ID for the product
         const id = products.length ? Math.max(products.map(p => p.id)) + 1 : 1;
         setProducts([...products, { ...newProduct, id }]); // Add new product with generated ID
     };
@@ -23,18 +24,44 @@ const AdminDashboard = () => {
                     <List>
                         <ListItem>
                             <Link to="/" style={{ textDecoration: 'none', color: '#4C96FF' }}>
-                                <Button color="inherit" style={{ padding: '8px 16px' }}>Home</Button> {/* Electric Blue */}
+                                <Button color="inherit" style={{ padding: '8px 16px' }}>Home</Button>
                             </Link>
                         </ListItem>
-                        <ListItem>
-                            <Link to="/admin/manage-products" style={{ textDecoration: 'none', color: '#4C96FF' }}>
-                                <Button color="inherit" style={{ padding: '8px 16px' }}>Manage Products</Button> {/* Electric Blue */}
-                            </Link>
+                        <ListItem button onClick={() => setOpenDropdown(!openDropdown)}>
+                            <Button color="inherit" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center' }}>
+                                Manage Products
+                                <ExpandMoreIcon style={{ marginLeft: 'auto', transform: openDropdown ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }} />
+                            </Button>
                         </ListItem>
-                        {/* Add more admin management links as needed */}
+                        <Collapse in={openDropdown} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem>
+                                    <Link to="/admin/manage-products/trending" style={{ textDecoration: 'none', color: '#4C96FF' }}>
+                                        <Button color="inherit" style={{ padding: '8px 16px', paddingLeft: '40px' }}>Trending Now</Button>
+                                    </Link>
+                                </ListItem>
+                                <ListItem>
+                                    <Link to="/admin/manage-products/top-picks" style={{ textDecoration: 'none', color: '#4C96FF' }}>
+                                        <Button color="inherit" style={{ padding: '8px 16px', paddingLeft: '40px' }}>Top Picks</Button>
+                                    </Link>
+                                </ListItem>
+                                <ListItem>
+                                    <Link to="/admin/manage-products/featured" style={{ textDecoration: 'none', color: '#4C96FF' }}>
+                                        <Button color="inherit" style={{ padding: '8px 16px', paddingLeft: '40px' }}>Featured</Button>
+                                    </Link>
+                                </ListItem>
+                                <ListItem>
+                                    <Link to="/admin/manage-products/highlights" style={{ textDecoration: 'none', color: '#4C96FF' }}>
+                                        <Button color="inherit" style={{ padding: '8px 16px', paddingLeft: '40px' }}>Highlights of the Week</Button>
+                                    </Link>
+                                </ListItem>
+                            </List>
+                        </Collapse>
+
+                        {/* Additional admin management links */}
                         <ListItem>
                             <Link to="/view-as-user" style={{ textDecoration: 'none', color: '#4C96FF' }}>
-                                <Button color="inherit" style={{ padding: '8px 16px' }}>View Site as User</Button> {/* Electric Blue */}
+                                <Button color="inherit" style={{ padding: '8px 16px' }}>View Site as User</Button>
                             </Link>
                         </ListItem>
                     </List>
@@ -42,8 +69,8 @@ const AdminDashboard = () => {
             </Drawer>
 
             {/* Main content area */}
-            <div style={{ padding: '20px', backgroundColor: '#FFFFFF', flexGrow: 1, marginLeft: 250 }}> {/* Adjust marginLeft */}
-                <h2 style={{ color: '#3D1401' }}>Welcome to the Admin Dashboard</h2> {/* Dark Accent Color */}
+            <div style={{ padding: '20px', backgroundColor: '#FFFFFF', flexGrow: 1, marginLeft: 250 }}>
+                <h2 style={{ color: '#3D1401' }}>Welcome to the Admin Dashboard</h2> 
                 {/* Render nested routes here */}
                 <Outlet context={{ products, addProduct, deleteProduct }} />
             </div>
@@ -52,3 +79,9 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+
+
+
+
+

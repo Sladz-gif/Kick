@@ -4,10 +4,13 @@ import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
 import AdminDashboard from './pages/AdminDashboard';
-import UserView from './pages/UserView'; // Ensure this component exists
-import ManageProducts from './pages/ManageProducts'; // Import ManageProducts
+import UserView from './pages/UserView'; 
+import TrendingNow from './pages/TrendingNow'; 
+import TopPicks from './pages/TopPicks'; 
+import Featured from './pages/Featured'; 
+import Highlights from './pages/Highlights'; 
 import Navbar from './Components/NavBar'; 
-import { supabase } from './pages/supabaseClient'; // Import your Supabase client
+import { supabase } from './pages/supabaseClient'; 
 
 const App = () => {
     const [cart, setCart] = useState([]);
@@ -57,7 +60,10 @@ const App = () => {
                 <Route path="/products" element={<ProductPage sneakers={sneakers} addToCart={addToCart} />} />
                 <Route path="/cart" element={<CartPage cartItems={cart} updateQuantity={updateQuantity} removeFromCart={removeFromCart} />} />
                 <Route path="/admin" element={<AdminDashboard />}>
-                    <Route path="manage-products" element={<ManageProducts />} /> {/* Manage Products page */}
+                    <Route path="manage-products/trending" element={<TrendingNow />} /> {/* Trending Now page */}
+                    <Route path="manage-products/top-picks" element={<TopPicks />} /> {/* Top Picks page */}
+                    <Route path="manage-products/featured" element={<Featured />} /> {/* Featured page */}
+                    <Route path="manage-products/highlights" element={<Highlights />} /> {/* Highlights page */}
                     <Route path="view-as-user" element={<UserView />} /> {/* View as User page */}
                 </Route>
             </Routes>
@@ -66,4 +72,6 @@ const App = () => {
 };
 
 export default App;
+
+
 
